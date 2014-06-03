@@ -100,33 +100,23 @@ public class QuicklicHardwareActivity extends QuicklicActivity {
 		public void onClick( View v )
 		{
 			//TODO
-			switch ( v.getId() )
+			if ( v.getId() == 0 )
 			{
-			case 0:
-				break;
 
-			case 1:
-				startActivity(new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS));
-				break;
-
-			case 2:
-				if ( !wifi.isWifiEnabled() )
-				{
-					if ( wifi.getWifiState() != WifiManager.WIFI_STATE_ENABLED )
-					{
-						onWifi();
-						System.out.println("on");
-					}
-				}
-				else
-				{
-					offWifi();
-					System.out.println("off");
-				}
-				break;
-			default:
-				break;
 			}
+			if ( v.getId() == 1 )
+			{
+				startActivity(new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS));
+			}
+			if ( v.getId() == 2 )
+			{
+				controlWifi();
+			}
+			if ( v.getId() == 3 )
+			{
+				controlBluetooth();
+			}
+
 		}
 	};
 
