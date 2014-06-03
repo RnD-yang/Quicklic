@@ -3,11 +3,8 @@ package quicklic.quicklic.hardware;
 import java.util.ArrayList;
 
 import quicklic.floating.api.R;
-<<<<<<< HEAD:Quicklic/src/quicklic/quicklic/hardware/QuicklicHardwareActivity.java
 import quicklic.quicklic.main.QuicklicActivity;
-=======
 import android.bluetooth.BluetoothAdapter;
->>>>>>> origin/first_branch:Quicklic/src/quicklic/quicklic/quicklic/QuicklicHardwareActivity.java
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -84,10 +81,7 @@ public class QuicklicHardwareActivity extends QuicklicActivity {
 	{
 		imageArrayList = new ArrayList<Drawable>();
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-<<<<<<< HEAD:Quicklic/src/quicklic/quicklic/hardware/QuicklicHardwareActivity.java
-=======
 		bluetooth = BluetoothAdapter.getDefaultAdapter();
->>>>>>> origin/first_branch:Quicklic/src/quicklic/quicklic/quicklic/QuicklicHardwareActivity.java
 
 		// TODO
 		imageArrayList.add(getResources().getDrawable(R.drawable.hardware_test));
@@ -106,22 +100,13 @@ public class QuicklicHardwareActivity extends QuicklicActivity {
 		public void onClick( View v )
 		{
 			//TODO
-<<<<<<< HEAD:Quicklic/src/quicklic/quicklic/hardware/QuicklicHardwareActivity.java
 			switch ( v.getId() )
-=======
-			if ( v.getId() == 0 )
-			{
-
-			}
-			if ( v.getId() == 1 )
->>>>>>> origin/first_branch:Quicklic/src/quicklic/quicklic/quicklic/QuicklicHardwareActivity.java
 			{
 			case 0:
 				break;
 
 			case 1:
 				startActivity(new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS));
-<<<<<<< HEAD:Quicklic/src/quicklic/quicklic/hardware/QuicklicHardwareActivity.java
 				break;
 
 			case 2:
@@ -141,18 +126,7 @@ public class QuicklicHardwareActivity extends QuicklicActivity {
 				break;
 			default:
 				break;
-=======
 			}
-			if ( v.getId() == 2 )
-			{
-				controlWifi();
-			}
-			if ( v.getId() == 3 )
-			{
-				controlBluetooth();
->>>>>>> origin/first_branch:Quicklic/src/quicklic/quicklic/quicklic/QuicklicHardwareActivity.java
-			}
-
 		}
 	};
 
