@@ -28,7 +28,7 @@ public class QuicklicMainActivity extends QuicklicActivity {
 	protected void onCreate( Bundle savedInstanceState )
 	{
 		// Activity가 생성될 때, Floating Image를 사라지게 함
-		SettingFloatingInterface.getFloatingService().setVisibility(false);
+//		SettingFloatingInterface.getFloatingService().setVisibility(false);
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_quicklic);
@@ -40,14 +40,14 @@ public class QuicklicMainActivity extends QuicklicActivity {
 	{
 		isNotHomeKey = false;
 		// Activity가 재실행되었을 때, Main Layout이 보여지게 함.
-		if ( SettingFloatingInterface.getFloatingService().getQuicklic().getVisibility() == View.VISIBLE )
-		{
-			getQuicklicFrameLayout().setVisibility(View.INVISIBLE);
-		}
-		else
-		{
-			getQuicklicFrameLayout().setVisibility(View.VISIBLE);
-		}
+//		if ( SettingFloatingInterface.getFloatingService().getQuicklic().getVisibility() == View.VISIBLE )
+//		{
+//			getQuicklicFrameLayout().setVisibility(View.INVISIBLE);
+//		}
+//		else
+//		{
+//			getQuicklicFrameLayout().setVisibility(View.VISIBLE);
+//		}
 		super.onResume();
 	}
 

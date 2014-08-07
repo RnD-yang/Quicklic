@@ -164,7 +164,7 @@ public class QuicklicHardwareActivity extends QuicklicActivity {
 
 				if ( !mPolicy.isAdminActive(mReceiverComponent) )
 				{
-					startActivity(componentPower.createIntent());
+					componentPower.createIntent();
 				}
 				else
 				{

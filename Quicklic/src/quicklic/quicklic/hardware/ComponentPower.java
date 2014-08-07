@@ -25,14 +25,15 @@ public class ComponentPower extends Activity {
 		this.mReceiverComponent = mReceiverComponent;
 	}
 
-	public Intent createIntent()
+	public void createIntent()
 	{
 		Intent activateDeviceAdminIntent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
 
+		activateDeviceAdminIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		activateDeviceAdminIntent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mReceiverComponent);
-		activateDeviceAdminIntent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getResources().getString(R.string.device_admin_description));
+		activateDeviceAdminIntent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, context.getString(R.string.device_admin_description));
 
-		return activateDeviceAdminIntent;
+		context.startActivity(activateDeviceAdminIntent);
 	}
 
 	public void screenOff()
