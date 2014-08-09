@@ -9,14 +9,10 @@ import quicklic.quicklic.datastructure.Axis;
 import quicklic.quicklic.datastructure.Item;
 import quicklic.quicklic.test.SettingFloatingInterface;
 import android.content.Context;
-import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -54,8 +50,8 @@ public class QuicklicActivity extends DeviceMetricActivity {
 	private int deviceWidth;
 
 	private ArrayList<FrameLayout> mQuicklicViewList = new ArrayList<FrameLayout>();
-	private ViewPager mIconPager;
-	private IconPagerAdapter mIconPagerAdapter;
+	private ViewPager mItemPager;
+	private ItemPagerAdapter mItemPagerAdapter;
 
 	/**************************************
 	 * Support Function Section
@@ -123,7 +119,7 @@ public class QuicklicActivity extends DeviceMetricActivity {
 	protected void addViewsForBalance( int item_count, ArrayList<Item> imageArrayList, OnClickListener clickListener )
 	{
 		mQuicklicViewList.clear();
-		mIconPager = new ViewPager(this);
+		mItemPager = new ViewPager(this);
 
 		viewCount = item_count;
 
@@ -147,12 +143,12 @@ public class QuicklicActivity extends DeviceMetricActivity {
 
 			//viewpager setting
 
-			mIconPagerAdapter = new IconPagerAdapter(this, 1, mQuicklicViewList);
-			mIconPager.setLayoutParams(new FrameLayout.LayoutParams(sizeOfQuicklicMain, sizeOfQuicklicMain));
-			mIconPager.setAdapter(mIconPagerAdapter);
+			mItemPagerAdapter = new ItemPagerAdapter(this, 1, mQuicklicViewList);
+			mItemPager.setLayoutParams(new FrameLayout.LayoutParams(sizeOfQuicklicMain, sizeOfQuicklicMain));
+			mItemPager.setAdapter(mItemPagerAdapter);
 
-			//setContentView(mIconPager);
-			quicklicFrameLayout.addView(mIconPager);
+			//setContentView(mItemPager);
+			quicklicFrameLayout.addView(mItemPager);
 
 			if ( centerView != null )
 			{
@@ -170,14 +166,17 @@ public class QuicklicActivity extends DeviceMetricActivity {
 		}
 
 		// item 개수에 따른 각도 구하기
-		int pagerCount = item_count / 10 + 1; //페이지 갯수
+		int pagerCount = (item_count / 10); //페이지 갯수
+		if ( item_count % 10 != 0 )
+			pagerCount += 1;
+
 		final int ANGLE = 360 / ((item_count > LIMTED_ITEM_COUNT) ? LIMTED_ITEM_COUNT : item_count); // 360 / (Item 개수)
 
 		for ( int j = 0; j < pagerCount; j++ ) //pager count 만큼 뷰를 생성해서 돌린다.
 		{
 			int angle_sum = 0; // 각도 누적
 			int pagerItemCount = item_count / (LIMTED_ITEM_COUNT * (j + 1)) > 0 ? LIMTED_ITEM_COUNT : item_count % LIMTED_ITEM_COUNT; //각 page당 Item 갯수 계산
-			FrameLayout pagerLayout = new FrameLayout(this);
+			FrameLayout pagerFrameLayout = new FrameLayout(this);
 
 			for ( int i = j * LIMTED_ITEM_COUNT; i < j * LIMTED_ITEM_COUNT + pagerItemCount; i++ )
 			{
@@ -214,24 +213,22 @@ public class QuicklicActivity extends DeviceMetricActivity {
 				itemBackLinearLayout.setOrientation(LinearLayout.VERTICAL);
 				itemBackLinearLayout.setLayoutParams(itemBackLayoutParams);
 				itemBackLinearLayout.setBackgroundResource(R.drawable.rendering_item);
-
 				itemBackLinearLayout.addView(itemImageView);
 
-				pagerLayout.addView(itemBackLinearLayout);
+				pagerFrameLayout.addView(itemBackLinearLayout);
 			}
 
-			pagerLayout.setBackgroundResource(R.drawable.rendering_circle);
-			mQuicklicViewList.add(pagerLayout);
+			pagerFrameLayout.setBackgroundResource(R.drawable.rendering_circle);
+			mQuicklicViewList.add(pagerFrameLayout);
 		}
 
-		//viewpager setting
+		// Viewpager setting
+		mItemPagerAdapter = new ItemPagerAdapter(this, pagerCount, mQuicklicViewList);
+		mItemPager.setLayoutParams(new FrameLayout.LayoutParams(sizeOfQuicklicMain, sizeOfQuicklicMain));
+		mItemPager.setAdapter(mItemPagerAdapter);
 
-		mIconPagerAdapter = new IconPagerAdapter(this, pagerCount, mQuicklicViewList);
-		mIconPager.setLayoutParams(new FrameLayout.LayoutParams(sizeOfQuicklicMain, sizeOfQuicklicMain));
-		mIconPager.setAdapter(mIconPagerAdapter);
-
-		//setContentView(mIconPager);
-		quicklicFrameLayout.addView(mIconPager);
+		//setContentView(mItemPager);
+		quicklicFrameLayout.addView(mItemPager);
 
 		if ( centerView != null )
 		{
@@ -351,6 +348,7 @@ public class QuicklicActivity extends DeviceMetricActivity {
 
 		mainLayoutParams = new FrameLayout.LayoutParams(sizeOfQuicklicMain, sizeOfQuicklicMain);
 		quicklicFrameLayout = (FrameLayout) findViewById(R.id.quicklic_main_FrameLayout);
+		quicklicFrameLayout.setOnTouchListener(touchListener);
 
 		//quicklicImageView = (ImageView) findViewById(R.id.quicklic_main_ImageView);
 		//quicklicImageView.setLayoutParams(mainLayoutParams);
@@ -467,72 +465,4 @@ public class QuicklicActivity extends DeviceMetricActivity {
 			return false;
 		}
 	};
-
-	/**
-	 * PagerAdapter
-	 */
-	private class IconPagerAdapter extends PagerAdapter {
-
-		private LayoutInflater mInflater;
-		private int mPagerCount = 0;
-		private ArrayList<FrameLayout> mQuicklicViewList;
-
-		public IconPagerAdapter(Context c, int pagerCnt, ArrayList<FrameLayout> layoutList)
-		{
-			super();
-
-			mInflater = LayoutInflater.from(c);
-			mPagerCount = pagerCnt;
-			mQuicklicViewList = layoutList;
-		}
-
-		@Override
-		public int getCount()
-		{
-			return mPagerCount;
-		}
-
-		@Override
-		public Object instantiateItem( View pager, int position )
-		{
-
-			Log.e("test", "instaniateItem : " + position);
-			((ViewPager) pager).addView(mQuicklicViewList.get(position), 0);
-
-			return mQuicklicViewList.get(position);
-		}
-
-		@Override
-		public void destroyItem( View pager, int position, Object view )
-		{
-			((ViewPager) pager).removeView((View) view);
-		}
-
-		@Override
-		public boolean isViewFromObject( View pager, Object obj )
-		{
-			return pager == obj;
-		}
-
-		@Override
-		public void restoreState( Parcelable arg0, ClassLoader arg1 )
-		{
-		}
-
-		@Override
-		public Parcelable saveState()
-		{
-			return null;
-		}
-
-		@Override
-		public void startUpdate( View arg0 )
-		{
-		}
-
-		@Override
-		public void finishUpdate( View arg0 )
-		{
-		}
-	}
 }
