@@ -143,8 +143,6 @@ public class FloatingService extends Service
 	 */
 	public static void stopQuicklicService()
 	{
-		context.unbindService(serviceConnection);
-
 		Intent intent = new Intent(context, FinishService.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(intent);
@@ -233,6 +231,7 @@ public class FloatingService extends Service
 		{
 			// Binder 객체 변환
 			remoteBinder = (RemoteBinder) iBinder;
+			context.unbindService(serviceConnection);
 		}
 	};
 
@@ -458,8 +457,8 @@ public class FloatingService extends Service
 	{
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		PendingIntent intent = PendingIntent.getActivity(context, 0, new Intent(context, FinishService.class), Intent.FLAG_ACTIVITY_NEW_TASK);
-
+		PendingIntent intent = PendingIntent
+				.getActivity(context, 0, new Intent(context, FinishService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 		Notification notification = new NotificationCompat.Builder(getApplicationContext()).setContentTitle("Quicklic").setContentText(getResources().getString(R.string.stop_quicklic))
 				.setSmallIcon(R.drawable.ic_launcher).setTicker(getResources().getString(R.string.hello_quicklic)).setOngoing(true).setContentIntent(intent).build();
 		notification.flags = Notification.FLAG_AUTO_CANCEL | Notification.FLAG_NO_CLEAR;
