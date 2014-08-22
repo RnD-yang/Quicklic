@@ -63,6 +63,7 @@ public class QuicklicFavoriteService extends BaseQuicklic {
 	 */
 	private void resetQuicklic()
 	{
+
 		isAdded = false;
 
 		// 현재 보고 있는 viewPager의 page를 기억
@@ -72,6 +73,7 @@ public class QuicklicFavoriteService extends BaseQuicklic {
 		{
 			getQuicklicFrameLayout().removeAllViews();
 		}
+
 		initializeImage();
 	}
 
@@ -203,6 +205,7 @@ public class QuicklicFavoriteService extends BaseQuicklic {
 			{
 				if ( !delEnabled )
 				{
+
 					getWindowManager().removeView(getDetectLayout());
 
 					if ( isItemFull(item_count) ) // check full count

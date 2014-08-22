@@ -34,13 +34,14 @@ public final class R {
         public static final int rendering_item=0x7f020014;
         public static final int rotate_off=0x7f020015;
         public static final int rotate_on=0x7f020016;
-        public static final int sound_decrease=0x7f020017;
-        public static final int sound_increase=0x7f020018;
-        public static final int sound_mute=0x7f020019;
-        public static final int sound_on=0x7f02001a;
-        public static final int sound_vibrate=0x7f02001b;
-        public static final int wifi_off=0x7f02001c;
-        public static final int wifi_on=0x7f02001d;
+        public static final int screen_off=0x7f020017;
+        public static final int sound_decrease=0x7f020018;
+        public static final int sound_increase=0x7f020019;
+        public static final int sound_mute=0x7f02001a;
+        public static final int sound_on=0x7f02001b;
+        public static final int sound_vibrate=0x7f02001c;
+        public static final int wifi_off=0x7f02001d;
+        public static final int wifi_on=0x7f02001e;
     }
     public static final class id {
         public static final int appname_TextView=0x7f070005;
@@ -68,15 +69,16 @@ public final class R {
         public static final int favorite_run_no=0x7f05000a;
         public static final int favorite_system=0x7f05000b;
         public static final int favorite_user=0x7f05000c;
-        public static final int hardware_device_admin_active=0x7f050014;
-        public static final int hardware_device_admin_deactive=0x7f050015;
-        public static final int hardware_device_admin_description=0x7f050017;
-        public static final int hardware_device_admin_label=0x7f050016;
+        public static final int hardware_device_admin_active=0x7f050015;
+        public static final int hardware_device_admin_deactive=0x7f050016;
+        public static final int hardware_device_admin_description=0x7f050018;
+        public static final int hardware_device_admin_label=0x7f050017;
         /**  Hardware 
          */
-        public static final int hardware_volume_max=0x7f050012;
-        public static final int hardware_volume_min=0x7f050013;
+        public static final int hardware_volume_max=0x7f050013;
+        public static final int hardware_volume_min=0x7f050014;
         public static final int hello_quicklic=0x7f050001;
+        public static final int keyboard_except_list=0x7f050012;
         /**  Keyboard 
          */
         public static final int keyboard_move_finish=0x7f05000e;

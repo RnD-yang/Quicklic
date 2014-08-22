@@ -96,6 +96,10 @@ public class QuicklicKeyBoardService extends Service {
 				displayMetrics();
 				createKeyBoard();
 				getRunningTaskList();
+<<<<<<< HEAD
+=======
+				resetKeyBoard();
+>>>>>>> thyang_branch
 				addViewInWindowManager();
 			}
 			catch (Exception e)
@@ -114,9 +118,9 @@ public class QuicklicKeyBoardService extends Service {
 	@Override
 	public void onDestroy()
 	{
+		super.onDestroy();
 		if ( keyboardLinearLayout != null )
 			windowManager.removeView(keyboardLinearLayout);
-		super.onDestroy();
 	}
 
 	private void displayMetrics()
@@ -183,6 +187,41 @@ public class QuicklicKeyBoardService extends Service {
 	}
 
 	/**
+<<<<<<< HEAD
+=======
+	 * @함수명 : resetKeyBoard
+	 * @매개변수 :
+	 * @반환 : void
+	 * @기능(역할) : 현재 앱을 기준으로 왼쪽과 오른쪽 버튼을 누를 시 실행 될 앱의 아이콘을 등록 / JELLY_BEAN이상의 경우에만 가능 / JELLY_BEAN 이상이 아니면, 기본 제공
+	 * @작성자 : THYang
+	 * @작성일 : 2014. 8. 22.
+	 */
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void resetKeyBoard()
+	{
+		try
+		{
+			if ( packageArrayList.size() > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
+			{
+				String leftPackge = packageArrayList.get(checkUnderBound(packageIndex));
+				String rightPackge = packageArrayList.get(checkUpperBound(packageIndex + 1));
+				leftIconFrameLayout.setBackground(packageManager.getApplicationIcon(leftPackge));
+				rightIconFrameLayout.setBackground(packageManager.getApplicationIcon(rightPackge));
+			}
+			else
+			{
+				leftIconFrameLayout.setBackgroundColor(Color.TRANSPARENT);
+				rightIconFrameLayout.setBackgroundColor(Color.TRANSPARENT);
+			}
+		}
+		catch (NameNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+>>>>>>> thyang_branch
 	 * @함수명 : createKeyBoard
 	 * @매개변수 :
 	 * @반환 : void
@@ -282,16 +321,28 @@ public class QuicklicKeyBoardService extends Service {
 	 */
 	private void getRunningTaskList()
 	{
+<<<<<<< HEAD
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_HOME);
 		ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
 		String launcherName = resolveInfo.activityInfo.packageName;
 
+=======
+		tempArrayList = new ArrayList<String>(packageArrayList); // 이전 리스트 임시 보관
+		packageArrayList.clear(); // 초기화
+
+		String launcherName = getLauncherName();
+>>>>>>> thyang_branch
 		List<RunningTaskInfo> taskinfo = activityManager.getRunningTasks(MAX_TASK_NUM);
+
+		int runningTaskCount = 0;
+		boolean isExist = false;
+
 		for ( int i = 0; i < taskinfo.size(); i++ )
 		{
 			String packageName = taskinfo.get(i).topActivity.getPackageName();
 
+<<<<<<< HEAD
 			if ( !(packageName.contains(launcherName) || packageName.contains(".phone") || packageName.contains("quicklic")
 					|| packageName.contains(".contacts") || packageName.contains("skt.prod")) )
 			{
@@ -300,6 +351,35 @@ public class QuicklicKeyBoardService extends Service {
 				packageArrayList.add(packageName);
 			}
 		}
+=======
+			// 시스템 앱 또는 항상 실행중인 기본 앱 걸러내기 : 사용자가 직접 실행한 앱만 추가하기 위함
+			// 또한, 이전에 갖고 있던 Task 앱 목록을 제외한 나머지를 추가하여, 중복 추가를 배제함
+			isExist = tempArrayList.contains(packageName);
+			if ( !packageName.matches(launcherName + "|" + getString(R.string.keyboard_except_list)) && !isExist )
+			{
+				tempArrayList.add(packageName);
+				runningTaskCount++;
+			}
+			if ( isExist )
+			{
+				runningTaskCount++;
+			}
+		}
+
+		if ( runningTaskCount == 0 )
+			tempArrayList.clear();
+
+		packageArrayList.addAll(tempArrayList); // 새로 구성된 리스트 복사
+
+		// 현재 보고 있는 앱의 위치로 초기화
+		packageIndex = packageArrayList.indexOf(getTopPackageName());
+		if ( packageIndex < 0 )
+			packageIndex = 0;
+		if ( packageIndex >= packageArrayList.size() )
+			packageIndex = packageArrayList.size();
+
+		appCount = packageArrayList.size();
+>>>>>>> thyang_branch
 	}
 
 	private OnClickListener clickListener = new OnClickListener()
@@ -315,6 +395,7 @@ public class QuicklicKeyBoardService extends Service {
 		@Override
 		public void onClick( View v )
 		{
+<<<<<<< HEAD
 			PackageManager packageManager = getPackageManager();
 			if ( v == leftButton )
 			{
@@ -375,6 +456,9 @@ public class QuicklicKeyBoardService extends Service {
 
 			}
 			else if ( v == moveButton )
+=======
+			if ( v == moveButton )
+>>>>>>> thyang_branch
 			{
 				long pressTime = System.currentTimeMillis();
 
@@ -420,6 +504,54 @@ public class QuicklicKeyBoardService extends Service {
 				Intent intent = new Intent(QuicklicKeyBoardService.this, QuicklicMainService.class);
 				startService(intent);
 			}
+<<<<<<< HEAD
+=======
+			else
+			{
+				getRunningTaskList();
+				resetKeyBoard();
+				if ( appCount == 0 )
+				{
+					Toast.makeText(getApplicationContext(), R.string.keyboard_move_no, Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				try
+				{
+					if ( v == leftButton ) // Button '<'
+					{
+						if ( packageArrayList.get(0).equals(getTopPackageName()) )
+						{
+							Toast.makeText(getApplicationContext(), R.string.keyboard_move_first, Toast.LENGTH_SHORT).show();
+							return;
+						}
+						else if ( (packageIndex - 1) >= 0 ) // 리스트의 처음이 아니면,
+						{
+							packageIndex--; // 이전 앱 실행
+						}
+					}
+					else if ( v == rightButton ) // Button '>'
+					{
+						if ( packageArrayList.get(appCount - 1).equals(getTopPackageName()) )
+						{
+							Toast.makeText(getApplicationContext(), R.string.keyboard_move_finish, Toast.LENGTH_SHORT).show();
+							return;
+						}
+						else if ( (packageIndex + 1) != appCount ) // 리스트의 끝이 아니면,
+						{
+							packageIndex++; // 다음 앱 실행
+						}
+					}
+					Intent intent = packageManager.getLaunchIntentForPackage(packageArrayList.get(packageIndex));
+					startActivity(intent);
+				}
+				catch (Exception e)
+				{
+					Toast.makeText(getApplicationContext(), R.string.keyboard_run_no, Toast.LENGTH_SHORT).show();
+				}
+				resetKeyBoard();
+			}
+>>>>>>> thyang_branch
 		}
 	};
 
