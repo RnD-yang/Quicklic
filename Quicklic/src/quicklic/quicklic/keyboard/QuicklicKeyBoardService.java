@@ -8,16 +8,17 @@ import java.util.TimerTask;
 import quicklic.floating.api.R;
 import quicklic.quicklic.main.QuicklicMainService;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -96,10 +97,7 @@ public class QuicklicKeyBoardService extends Service {
 				displayMetrics();
 				createKeyBoard();
 				getRunningTaskList();
-<<<<<<< HEAD
-=======
 				resetKeyBoard();
->>>>>>> thyang_branch
 				addViewInWindowManager();
 			}
 			catch (Exception e)
@@ -187,8 +185,6 @@ public class QuicklicKeyBoardService extends Service {
 	}
 
 	/**
-<<<<<<< HEAD
-=======
 	 * @함수명 : resetKeyBoard
 	 * @매개변수 :
 	 * @반환 : void
@@ -221,7 +217,6 @@ public class QuicklicKeyBoardService extends Service {
 	}
 
 	/**
->>>>>>> thyang_branch
 	 * @함수명 : createKeyBoard
 	 * @매개변수 :
 	 * @반환 : void
@@ -321,18 +316,10 @@ public class QuicklicKeyBoardService extends Service {
 	 */
 	private void getRunningTaskList()
 	{
-<<<<<<< HEAD
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.addCategory(Intent.CATEGORY_HOME);
-		ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-		String launcherName = resolveInfo.activityInfo.packageName;
-
-=======
 		tempArrayList = new ArrayList<String>(packageArrayList); // 이전 리스트 임시 보관
 		packageArrayList.clear(); // 초기화
 
 		String launcherName = getLauncherName();
->>>>>>> thyang_branch
 		List<RunningTaskInfo> taskinfo = activityManager.getRunningTasks(MAX_TASK_NUM);
 
 		int runningTaskCount = 0;
@@ -342,16 +329,6 @@ public class QuicklicKeyBoardService extends Service {
 		{
 			String packageName = taskinfo.get(i).topActivity.getPackageName();
 
-<<<<<<< HEAD
-			if ( !(packageName.contains(launcherName) || packageName.contains(".phone") || packageName.contains("quicklic")
-					|| packageName.contains(".contacts") || packageName.contains("skt.prod")) )
-			{
-				// TODO 
-				System.out.println(packageName);
-				packageArrayList.add(packageName);
-			}
-		}
-=======
 			// 시스템 앱 또는 항상 실행중인 기본 앱 걸러내기 : 사용자가 직접 실행한 앱만 추가하기 위함
 			// 또한, 이전에 갖고 있던 Task 앱 목록을 제외한 나머지를 추가하여, 중복 추가를 배제함
 			isExist = tempArrayList.contains(packageName);
@@ -379,7 +356,6 @@ public class QuicklicKeyBoardService extends Service {
 			packageIndex = packageArrayList.size();
 
 		appCount = packageArrayList.size();
->>>>>>> thyang_branch
 	}
 
 	private OnClickListener clickListener = new OnClickListener()
@@ -395,70 +371,7 @@ public class QuicklicKeyBoardService extends Service {
 		@Override
 		public void onClick( View v )
 		{
-<<<<<<< HEAD
-			PackageManager packageManager = getPackageManager();
-			if ( v == leftButton )
-			{
-				if ( packageArrayList.size() == 0 )
-				{
-					Toast.makeText(getApplicationContext(), R.string.keyboard_move_no, Toast.LENGTH_SHORT).show();
-					return;
-				}
-
-				if ( packageIndex > 0 )
-				{
-					--packageIndex;
-
-					try
-					{
-						Intent intent = packageManager.getLaunchIntentForPackage(packageArrayList.get(packageIndex));
-						startActivity(intent);
-					}
-					catch (Exception e)
-					{
-						Toast.makeText(getApplicationContext(), R.string.keyboard_run_no, Toast.LENGTH_SHORT).show();
-						packageArrayList.remove(packageIndex);
-					}
-				}
-				else
-				{
-					Toast.makeText(getApplicationContext(), R.string.keyboard_move_first, Toast.LENGTH_SHORT).show();
-				}
-
-			}
-			else if ( v == rightButton )
-			{
-				if ( packageArrayList.size() == 0 )
-				{
-					Toast.makeText(getApplicationContext(), R.string.keyboard_move_no, Toast.LENGTH_SHORT).show();
-					return;
-				}
-				if ( packageIndex != packageArrayList.size() - 1 )
-				{
-					++packageIndex;
-
-					try
-					{
-						Intent intent = packageManager.getLaunchIntentForPackage(packageArrayList.get(packageIndex));
-						startActivity(intent);
-					}
-					catch (Exception e)
-					{
-						Toast.makeText(getApplicationContext(), R.string.keyboard_run_no, Toast.LENGTH_SHORT).show();
-						packageArrayList.remove(packageIndex);
-						packageIndex--;
-					}
-				}
-				else
-				{
-					Toast.makeText(getApplicationContext(), R.string.keyboard_move_finish, Toast.LENGTH_SHORT).show();
-				}
-
-			}
-			else if ( v == moveButton )
-=======
 			if ( v == moveButton )
->>>>>>> thyang_branch
 			{
 				long pressTime = System.currentTimeMillis();
 
@@ -504,8 +417,7 @@ public class QuicklicKeyBoardService extends Service {
 				Intent intent = new Intent(QuicklicKeyBoardService.this, QuicklicMainService.class);
 				startService(intent);
 			}
-<<<<<<< HEAD
-=======
+
 			else
 			{
 				getRunningTaskList();
@@ -551,7 +463,6 @@ public class QuicklicKeyBoardService extends Service {
 				}
 				resetKeyBoard();
 			}
->>>>>>> thyang_branch
 		}
 	};
 
