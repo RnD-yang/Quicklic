@@ -14,7 +14,9 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -48,7 +50,11 @@ public class QuicklicKeyBoardService extends Service {
 	private WindowManager windowManager;
 	private WindowManager.LayoutParams layoutParams;
 
+	private PackageManager packageManager;
+
 	private LinearLayout keyboardLinearLayout;
+	private FrameLayout leftIconFrameLayout;
+	private FrameLayout rightIconFrameLayout;
 
 	private int keyboardHeight;
 	private int keyboardWidth;
@@ -69,7 +75,9 @@ public class QuicklicKeyBoardService extends Service {
 
 	private ActivityManager activityManager;
 	private ArrayList<String> packageArrayList;
+	private ArrayList<String> tempArrayList;
 	private int packageIndex;
+	private int appCount;
 
 	@Override
 	public IBinder onBind( Intent intent )
@@ -151,8 +159,11 @@ public class QuicklicKeyBoardService extends Service {
 	{
 		this.intent = intent;
 		timer = new Timer();
+
+		packageManager = getPackageManager();
 		packageArrayList = new ArrayList<String>();
 		packageIndex = 0;
+		appCount = 0;
 
 		KEY_HEIGHT_RATE = 0.125f;
 		KEY_WIDTH_RATE = 0.25f;
@@ -227,11 +238,13 @@ public class QuicklicKeyBoardService extends Service {
 	private void createKeyBoard()
 	{
 		keyboardLinearLayout = new LinearLayout(this);
+		leftIconFrameLayout = new FrameLayout(this);
+		rightIconFrameLayout = new FrameLayout(this);
 		LinearLayout backSectionLinearLayout = new LinearLayout(this);
 		LinearLayout firstSectionLinearLayout = new LinearLayout(this);
 		LinearLayout secondSectionLinearLayout = new LinearLayout(this);
 
-		FrameLayout.LayoutParams keyboardLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+		FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 		LinearLayout.LayoutParams sectionLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -246,7 +259,10 @@ public class QuicklicKeyBoardService extends Service {
 		keyboardLinearLayout.setOrientation(LinearLayout.VERTICAL);
 		keyboardLinearLayout.setBackgroundColor(Color.TRANSPARENT);
 		keyboardLinearLayout.setWeightSum(1);
-		keyboardLinearLayout.setLayoutParams(keyboardLayoutParams);
+		keyboardLinearLayout.setLayoutParams(frameLayoutParams);
+
+		leftIconFrameLayout.setLayoutParams(buttonLayoutParams);
+		rightIconFrameLayout.setLayoutParams(buttonLayoutParams);
 
 		backSectionLinearLayout.setOrientation(LinearLayout.VERTICAL);
 		backSectionLinearLayout.setBackgroundColor(Color.WHITE);
@@ -268,12 +284,12 @@ public class QuicklicKeyBoardService extends Service {
 		secondSectionLinearLayout.setLayoutParams(sectionLayoutParams);
 
 		leftButton.setHeight(keyboardHeight);
-		leftButton.setLayoutParams(buttonLayoutParams);
+		leftButton.setLayoutParams(frameLayoutParams);
 		leftButton.setTextAppearance(this, R.style.KeyBoard_Button);
 		leftButton.setBackgroundResource(R.drawable.key_left);
 
 		rightButton.setHeight(keyboardHeight);
-		rightButton.setLayoutParams(buttonLayoutParams);
+		rightButton.setLayoutParams(frameLayoutParams);
 		rightButton.setTextAppearance(this, R.style.KeyBoard_Button);
 		rightButton.setBackgroundResource(R.drawable.key_right);
 
@@ -297,13 +313,76 @@ public class QuicklicKeyBoardService extends Service {
 		firstSectionLinearLayout.addView(moveButton);
 		firstSectionLinearLayout.addView(exitButton);
 
-		secondSectionLinearLayout.addView(leftButton);
-		secondSectionLinearLayout.addView(rightButton);
+		leftIconFrameLayout.addView(leftButton);
+		rightIconFrameLayout.addView(rightButton);
+
+		secondSectionLinearLayout.addView(leftIconFrameLayout);
+		secondSectionLinearLayout.addView(rightIconFrameLayout);
 
 		backSectionLinearLayout.addView(firstSectionLinearLayout);
 		backSectionLinearLayout.addView(secondSectionLinearLayout);
 
 		keyboardLinearLayout.addView(backSectionLinearLayout);
+	}
+
+	/**
+	 * @함수명 : checkUpperBound
+	 * @매개변수 :
+	 * @반환 : int
+	 * @기능(역할) : PackageName List의 upper 경계 검사해서 오류 방지
+	 * @작성자 : THYang
+	 * @작성일 : 2014. 8. 22.
+	 */
+	private int checkUpperBound( int index )
+	{
+		if ( index >= packageArrayList.size() )
+			return packageArrayList.size() - 1;
+		return index;
+	}
+
+	/**
+	 * @함수명 : checkUnderBound
+	 * @매개변수 :
+	 * @반환 : int
+	 * @기능(역할) : PackageName List의 under 경계 검사해서 오류 방지
+	 * @작성자 : THYang
+	 * @작성일 : 2014. 8. 22.
+	 */
+	private int checkUnderBound( int index )
+	{
+		if ( index <= 0 )
+			return 0;
+		return index - 1;
+	}
+
+	/**
+	 * @함수명 : getLauncherName
+	 * @매개변수 :
+	 * @반환 : String
+	 * @기능(역할) : Launcher 이름 가져오기
+	 * @작성자 : THYang
+	 * @작성일 : 2014. 8. 22.
+	 */
+	private String getLauncherName()
+	{
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		return resolveInfo.activityInfo.packageName;
+	}
+
+	/**
+	 * @함수명 : getTopPackageName
+	 * @매개변수 :
+	 * @반환 : String
+	 * @기능(역할) : 현재 상위 Package 이름 가져오기
+	 * @작성자 : THYang
+	 * @작성일 : 2014. 8. 22.
+	 */
+	private String getTopPackageName()
+	{
+		List<RunningTaskInfo> taskinfo = activityManager.getRunningTasks(MAX_TASK_NUM);
+		return taskinfo.get(0).topActivity.getPackageName();
 	}
 
 	/**
@@ -417,7 +496,6 @@ public class QuicklicKeyBoardService extends Service {
 				Intent intent = new Intent(QuicklicKeyBoardService.this, QuicklicMainService.class);
 				startService(intent);
 			}
-
 			else
 			{
 				getRunningTaskList();
